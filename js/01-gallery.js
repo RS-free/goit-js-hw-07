@@ -20,20 +20,29 @@ function createGalleryMarkup(gallery) {
         })
         .join("");
 }
+
 function onGalleryClick(event) {
-    if (!event.target.classList.contains("gallery__image")) {
+    const isImg = event.target.classList.contains("gallery__image");
+    if (!isImg) {
         return;
     }
-    const instance = basicLightbox.create(`
-    <img src="${event.target.dataset.source}">
-    `);
+
+    const instance = basicLightbox.create(
+        `<img src="${event.target.dataset.source}">`,
+        {
+            onShow: (instance) => {
+                window.addEventListener("keydown", onKeyEscAction);
+            },
+            onClose: (instance) => {
+                window.removeEventListener("keydown", onKeyEscAction);
+            },
+        }
+    );
     instance.show();
+
     function onKeyEscAction(event) {
-        const ESC_KEY_CODE = "Escape";
-        const isEscKey = event.code === ESC_KEY_CODE;
-        if (isEscKey) {
+        if (event.code === "Escape") {
             instance.close();
         }
     }
-    window.addEventListener("keydown", onKeyEscAction);
 }
